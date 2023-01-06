@@ -1,0 +1,33 @@
+version: '3'
+
+
+services:
+  cliente:
+    build: ./Microservice/cliente-service
+    depends_on:
+      - mongo
+    environment:
+      - PORT=4000
+      - MONGODB_CNN=mongodb://localhost:27017/cliente-service
+  mesero:
+    build: ./Microservice/mesero-service
+    depends_on:
+      - mongo
+    environment:
+      - PORT=4000
+      - MONGODB_CNN=mongodb://localhost:27017/mesero-service
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - cliente
+      - mesero
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
